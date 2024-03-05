@@ -11,7 +11,7 @@ Nivel7::Nivel7() {
 	this->ManejoVelocidadPelota();
 	
 	for (int i = 0; i < rowCount-5; ++i) { 
-		if (i%2!=0){
+		if (i%2!=0){   /// Si la fila es par, se colocan los bloques verticales
 			for (int j = 0; j < columnCount+4; ++j) {
 				i--;
 				float x = j * ((blockWidth-54) + 34.f) + 40.f;

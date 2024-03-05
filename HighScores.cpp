@@ -37,7 +37,7 @@ HighScores::HighScores() {
 
 	string puntos;
 	ifstream archi_puntos("puntos.txt", ios::in);
-	if (archi_puntos.is_open() && archi_puntos.peek() == ifstream::traits_type::eof()){
+	if (archi_puntos.is_open() && archi_puntos.peek() == ifstream::traits_type::eof()){   /// Si el archivo esta vacio le damos un valor a puntos
 		puntos = "0";
 	}else{
 		archi_puntos>>puntos;
@@ -48,14 +48,14 @@ HighScores::HighScores() {
 	strcpy(jugador.m_name, m_nombre.c_str());
 	jugador.m_puntos = stoi(puntos);
 	
-	size_t length = strlen(jugador.m_name);  /// Se obtiene la longitud de la cadena copiada
-	jugador.m_name[length] = '\0';   /// Se agrega el carácter nulo al final del arreglo después de la cadena copiada
+	
 
 	int cant = 0;
 	int indice_a_eliminar;
 	/// Busca los jugadores que necesitan ser reemplazados o eliminados
 	for (size_t i = 0; i < Scores.size(); ++i) {
-		if (strcmp(Scores[i].m_name, jugador.m_name) == 0 && comparing_score(jugador, Scores[i])) {
+		/// Si el jugador ya esta en la lista y supera su mejor puntaje se guarda el indice para eliminar el puntaje viejo
+		if (strcmp(Scores[i].m_name, jugador.m_name) == 0 && comparing_score(jugador, Scores[i])) {  
 			indice_a_eliminar = i;
 			cant++;
 		}else{
@@ -67,11 +67,11 @@ HighScores::HighScores() {
 
 	/// Elimina los jugadores que necesitan ser reemplazados
 	if(cant==1){
-		auto it = Scores.begin() + indice_a_eliminar;
-		Scores.erase(it);
-		Scores.push_back(jugador);   /// Inserta el nuevo jugador
+		auto it = Scores.begin() + indice_a_eliminar;  
+		Scores.erase(it);   /// Se elimina el jugador que supero su mayor puntaje
+		Scores.push_back(jugador);   /// Se inserta el jugador con su nuevo puntaje
 		sort(Scores.begin(), Scores.end(), comparing_score);
-		/// Escribe los puntajes en el archivo
+		/// Se actualizan los puntajes en el archivo
 		ofstream archi_escribir("Scores.dat", ios::binary | ios::trunc);
 		for (size_t i = 0; i < Scores.size(); ++i) {
 			archi_escribir.write(reinterpret_cast<const char*>(&Scores[i]), sizeof(PlayerScore));
@@ -79,12 +79,14 @@ HighScores::HighScores() {
 		archi_escribir.close();  
 	}
 		
-	if(cant==0){
-		auto it = prev(Scores.end());
-		if (comparing_score(jugador,*it)){
-			Scores.push_back(jugador);
+	if(cant==0){  /// (El jugador nuevo no esta en la lista)
+		auto it = prev(Scores.end());   
+		/// Si el puntaje del nuevo jugador es mayor al ultimo de la lista, se añade el nuevo jugador y se elimina el ultimo
+		if (comparing_score(jugador,*it)){  
+			Scores.push_back(jugador);   
 			sort(Scores.begin(),Scores.end(),comparing_score);
 			Scores.pop_back();
+			/// Se actualizan los puntajes en el  archivo
 			ofstream archi_escribir("Scores.dat",ios::binary|ios::trunc);
 			for(int i=0;i<Scores.size();i++) { 
 				archi_escribir.write(reinterpret_cast<char*>(&Scores[i]),sizeof(PlayerScore));

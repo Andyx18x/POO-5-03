@@ -10,7 +10,6 @@ Nivel5::Nivel5() {
 	
 	
 	/// Tamaños aleatorios
-	
 	srand(time(nullptr));   /// Inicializa la semilla para generar números aleatorios
 	int minHeight = 3;
 	int maxHeight = 20;
